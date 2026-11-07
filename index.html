@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sharjah — Faith &amp; Coast</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=Inter:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;600&family=Noto+Sans+SC:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sand:#f6efe2; --sand-2:#efe3cc; --gold:#b88a3e; --gold-2:#d9b56f;
+    --sea:#0f4c5c; --sea-2:#1a7083; --ink:#1d2a30; --muted:#6b7378;
+    --card:#fffaf1; --shadow:0 10px 30px -12px rgba(15,76,92,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--sand);color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(217,181,111,.25), transparent 45%),
+      radial-gradient(circle at 100% 100%, rgba(26,112,131,.18), transparent 50%),
+      var(--sand);}
+  /* subtle geometric pattern */
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.07;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%230f4c5c' stroke-width='1'%3E%3Cpath d='M30 0l8.8 21.2L60 30l-21.2 8.8L30 60l-8.8-21.2L0 30l21.2-8.8z'/%3E%3Ccircle cx='30' cy='30' r='9'/%3E%3C/g%3E%3C/svg%3E");}
+  .wrap{position:relative;max-width:560px;margin:0 auto;padding:28px 18px 40px}
+
+  header{text-align:center;padding:8px 0 22px}
+  .arch{width:150px;height:auto;display:block;margin:0 auto 14px}
+  .eyebrow{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600}
+  h1{font-family:"Playfair Display",serif;font-size:2.3rem;line-height:1.1;color:var(--sea);margin:8px 0 6px}
+  h1 em{color:var(--gold);font-style:italic;font-weight:500}
+  .ar-title{font-family:"IBM Plex Sans Arabic",sans-serif;color:var(--sea-2);font-size:1.05rem}
+  .lede{color:var(--muted);font-size:.95rem;margin-top:12px;line-height:1.5}
+
+  .notes{display:flex;flex-direction:column;gap:16px;margin-top:6px}
+  .note{background:var(--card);border-radius:22px;padding:16px 16px 14px;box-shadow:var(--shadow);
+    border:1px solid rgba(184,138,62,.18);position:relative;overflow:hidden}
+  .note::after{content:"";position:absolute;inset:auto 0 0 0;height:3px;
+    background:linear-gradient(90deg,var(--gold),var(--sea-2));opacity:.8}
+  .note-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .lang{display:flex;align-items:center;gap:10px}
+  .badge{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:600;
+    color:#fff;background:var(--sea);font-size:.95rem}
+  .note[data-lang="ar"] .badge{font-family:"IBM Plex Sans Arabic";background:var(--gold)}
+  .note[data-lang="zh"] .badge{font-family:"Noto Sans SC";background:var(--sea-2)}
+  .lang-name{font-weight:600;font-size:1rem}
+  .lang-sub{font-size:.78rem;color:var(--muted)}
+  .dur{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+
+  .player{display:flex;align-items:center;gap:12px}
+  .play{flex:none;width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;
+    background:var(--sea);color:#fff;display:grid;place-items:center;
+    box-shadow:0 6px 16px -6px rgba(15,76,92,.6);transition:transform .15s, background .2s}
+  .play:active{transform:scale(.94)}
+  .play svg{width:22px;height:22px}
+  .note.playing .play{background:var(--gold)}
+  .wave{flex:1;display:flex;align-items:center;gap:3px;height:40px;cursor:default}
+  .wave span{flex:1;border-radius:3px;background:#d8cdb8;transition:background .2s}
+  .wave span.on{background:var(--sea-2)}
+  .note.playing .wave span.on{animation:pulse 1s ease-in-out infinite}
+  @keyframes pulse{50%{opacity:.55}}
+
+  .toggle{margin-top:12px;background:none;border:none;color:var(--sea-2);font:inherit;font-size:.85rem;
+    font-weight:600;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:6px}
+  .toggle svg{width:14px;height:14px;transition:transform .2s}
+  .note.open .toggle svg{transform:rotate(180deg)}
+  .text{display:none;margin-top:8px;padding:12px 14px;background:var(--sand);border-radius:14px;
+    line-height:1.7;font-size:.95rem;color:#33424a}
+  .note.open .text{display:block}
+  .text[dir="rtl"]{font-family:"IBM Plex Sans Arabic",sans-serif;font-size:1.02rem;line-height:1.95}
+  .text[lang="zh"]{font-family:"Noto Sans SC",sans-serif;line-height:1.9}
+  .warn{display:none;margin-top:10px;font-size:.8rem;color:#8a5a1a;background:#fbecd2;border-radius:10px;padding:8px 10px}
+  .note.failed .warn{display:block}
+  .drive{display:none;width:100%;height:64px;border:0;border-radius:12px;margin-top:10px;background:#fff}
+  .note.failed .drive{display:block}
+  .note.sc .drive{height:120px;background:transparent}
+  .note.failed .player{display:none}
+  .wave{cursor:pointer}
+
+  .team{margin-top:28px;text-align:center;background:var(--sea);color:#f3ead8;border-radius:22px;padding:22px 18px;
+    box-shadow:var(--shadow)}
+  .team h2{font-family:"Playfair Display",serif;font-size:1.25rem;color:#fff;margin-bottom:12px}
+  .names{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+  .names span{background:rgba(255,255,255,.1);border:1px solid rgba(217,181,111,.4);padding:6px 12px;border-radius:999px;font-size:.88rem}
+  .class{margin-top:14px;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-2)}
+  footer{text-align:center;margin-top:20px;font-size:.8rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <svg class="arch" viewBox="0 0 200 120" aria-hidden="true">
+      <defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#d9b56f"/><stop offset="1" stop-color="#b88a3e"/></linearGradient></defs>
+      <!-- sea -->
+      <path d="M0 104 Q25 98 50 104 T100 104 T150 104 T200 104 V120 H0Z" fill="#1a7083" opacity=".85"/>
+      <path d="M0 110 Q25 105 50 110 T100 110 T150 110 T200 110 V120 H0Z" fill="#0f4c5c"/>
+      <!-- minarets -->
+      <rect x="38" y="30" width="9" height="70" rx="2" fill="url(#g)"/><path d="M36 30 L42.5 14 L49 30Z" fill="#b88a3e"/>
+      <rect x="153" y="30" width="9" height="70" rx="2" fill="url(#g)"/><path d="M151 30 L157.5 14 L164 30Z" fill="#b88a3e"/>
+      <!-- body + dome -->
+      <rect x="60" y="62" width="80" height="38" fill="url(#g)"/>
+      <path d="M68 62 C68 30 132 30 132 62Z" fill="#d9b56f"/>
+      <line x1="100" y1="22" x2="100" y2="34" stroke="#b88a3e" stroke-width="2"/>
+      <circle cx="100" cy="20" r="2.5" fill="#b88a3e"/>
+      <!-- door arch -->
+      <path d="M90 100 V82 Q100 68 110 82 V100Z" fill="#0f4c5c"/>
+      <path d="M70 92 V80 Q75 72 80 80 V92Z M120 92 V80 Q125 72 130 80 V92Z" fill="#0f4c5c" opacity=".7"/>
+    </svg>
+    <div class="eyebrow">Class 10/9 · Voice Notes</div>
+    <h1>Sharjah: <em>Faith</em> &amp; Coast</h1>
+    <div class="ar-title">الشارقة: الإيمان والساحل · 沙迦：信仰与海岸</div>
+    <p class="lede">Tap play to listen in Arabic, English or Chinese.</p>
+  </header>
+
+  <section class="notes" id="notes"></section>
+
+  <section class="team">
+    <h2>Researched, designed &amp; presented by</h2>
+    <div class="names">
+      <span>Mzoon Alafeefi</span><span>Amna Alblooshi</span><span>Mouza Alshamsi</span><span>Wadima Almehairbi</span>
+    </div>
+    <div class="class">Class 10/9</div>
+  </section>
+  <footer>Thank you for your time and attention · شكراً لكم · 谢谢</footer>
+</div>
+
+<script>
+/* =====================================================
+   PASTE YOUR LINKS HERE (between the quotes)
+   SoundCloud: the full track link from the browser address bar,
+   e.g. https://soundcloud.com/your-name/track-name
+   (Google Drive share links also work.)
+   ===================================================== */
+const AUDIO_LINKS = {
+  ar: "https://soundcloud.com/shahad-adel-300006548/sharjah_arabic?si=8aeb0c26078d4cd8bfb5238f66bec8ce&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing",
+  en: "https://soundcloud.com/shahad-adel-300006548/sharjah_english?si=b7e2f8c6ebfd40988ab54ebccbe02e5b&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing",
+  zh: "https://soundcloud.com/shahad-adel-300006548/sharjah_chinese?si=e1c67aac795544d3a626a280f37b8bb7&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing"
+};
+/* ===================================================== */
+
+const NOTES = [
+  { id:"ar", badge:"ع", name:"العربية", sub:"Arabic", dir:"rtl", lang:"ar",
+    text:"يقف جامع الشارقة الكبير تحفةً معماريةً إيمانيةً في قلب اليابسة، بينما يوفّر الساحل النابض بالحياة على امتداد الخليج العربي شواطئ عامة رائعة، في انسجامٍ جميل بين التراث الثقافي العريق لإمارة الشارقة وبيئتها الطبيعية المزدهرة. هذا المشروع أعدّته بحثاً وتصميماً وتقديماً بكل فخر: مزون العفيفي، وآمنة البلوشي، وموزة الشامسي، ووديمة المهيري، من الصف العاشر، الشعبة التاسعة. شكراً لكم على وقتكم واهتمامكم!" },
+  { id:"en", badge:"EN", name:"English", sub:"الإنجليزية", dir:"ltr", lang:"en",
+    text:"The Sharjah Grand Mosque stands as an inland architectural masterpiece of faith, while the vibrant coast along the Arabian Gulf provides excellent public beaches and a beautiful harmony between Sharjah's deep-rooted cultural heritage and its thriving natural environment. This project was proudly researched, designed, and presented by Mzoon Alafeefi, Amna Alblooshi, Mouza Alshamsi, and Wadima Almehairbi from class 10/9. Thank you for your time and attention!" },
+  { id:"zh", badge:"中", name:"中文", sub:"Chinese", dir:"ltr", lang:"zh",
+    text:"沙迦大清真寺是一座矗立于内陆的信仰建筑杰作，而阿拉伯湾沿岸充满活力的海岸则提供了优质的公共海滩，展现了沙迦深厚的文化遗产与其繁荣的自然环境之间的美好和谐。本项目由十年级九班的穆宗·阿拉菲菲、阿姆娜·阿尔布卢希、穆扎·阿尔沙姆西和瓦迪玛·阿尔迈海尔比自豪地完成研究、设计与展示。感谢您的时间与关注！" }
+];
+
+const BARS = 34;
+const icons = {
+  play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',
+  pause:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg>',
+  chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>'
+};
+const fmt = s => isFinite(s) ? `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,"0")}` : "--:--";
+
+// Accepts a full Drive share link or just the file ID
+function driveId(link){
+  if(!link || /PASTE_/.test(link)) return null;
+  const m = String(link).match(/\/d\/([\w-]{20,})/) || String(link).match(/[?&]id=([\w-]{20,})/) || String(link).match(/^([\w-]{20,})$/);
+  return m ? m[1] : null;
+}
+
+// SoundCloud: accepts a track link, or the whole embed code SoundCloud gives you
+function soundcloudSrc(link){
+  link = String(link||"").trim();
+  if(!/soundcloud\.com/.test(link)) return null;
+  const emb = link.match(/w\.soundcloud\.com\/player\/\?[^"'\s>]*/);
+  let track = link;
+  if(emb){
+    const u = emb[0].replace(/&amp;/g,"&").match(/[?&]url=([^&]+)/);
+    if(u) track = decodeURIComponent(u[1]);
+  }
+  const m = track.match(/https?:\/\/[^\s"'<>]+/); if(m) track = m[0];
+  return "https://w.soundcloud.com/player/?url=" + encodeURIComponent(track) +
+    "&color=%230f4c5c&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&show_artwork=false&visual=false";
+}
+
+let playingAudio = null;
+
+function build(){
+  const box = document.getElementById("notes");
+  NOTES.forEach(n=>{
+    const sc = soundcloudSrc(AUDIO_LINKS[n.id]);
+    const id = sc ? null : driveId(AUDIO_LINKS[n.id]);
+    const el = document.createElement("article");
+    el.className = "note"; el.dataset.lang = n.id;
+    const heights = Array.from({length:BARS},(_,i)=> 25 + Math.round(70*Math.abs(Math.sin(i*1.7 + n.id.length)*Math.cos(i*.45))));
+    el.innerHTML = `
+      <div class="note-head">
+        <div class="lang"><div class="badge">${n.badge}</div>
+          <div><div class="lang-name">${n.name}</div><div class="lang-sub">${n.sub}</div></div></div>
+        <div class="dur">--:--</div>
+      </div>
+      <div class="player">
+        <button class="play" aria-label="Play ${n.sub}">${icons.play}</button>
+        <div class="wave">${heights.map(h=>`<span style="height:${h}%"></span>`).join("")}</div>
+      </div>
+      <iframe class="drive" title="${n.sub} voice note" allow="autoplay"></iframe>
+      <button class="toggle">${icons.chev}<span>Show text</span></button>
+      <p class="text" dir="${n.dir}" lang="${n.lang}">${n.text}</p>
+      <div class="warn">${id ? "" : "Voice note link not added yet."}</div>`;
+    box.appendChild(el);
+
+    el.querySelector(".toggle").addEventListener("click",()=>{
+      el.classList.toggle("open");
+      el.querySelector(".toggle span").textContent = el.classList.contains("open") ? "Hide text" : "Show text";
+    });
+
+    if(sc){
+      el.classList.add("failed","sc");
+      el.querySelector(".dur").style.display = "none";
+      el.querySelector(".warn").remove();
+      const f = el.querySelector(".drive"); f.src = sc; f.setAttribute("scrolling","no");
+      return;
+    }
+    if(!id){ el.classList.add("failed"); el.querySelector(".drive").remove(); return; }
+
+    const audio = new Audio();
+    audio.preload = "metadata";
+    audio.src = `https://drive.google.com/uc?export=download&id=${id}`;
+    const dur = el.querySelector(".dur"), btn = el.querySelector(".play");
+    const bars = el.querySelectorAll(".wave span");
+
+    // If the direct stream is blocked, fall back to Google Drive's own player
+    const fallback = ()=>{
+      if(el.classList.contains("failed")) return;
+      el.classList.add("failed");
+      el.querySelector(".drive").src = `https://drive.google.com/file/d/${id}/preview`;
+      el.querySelector(".warn").textContent = "";
+      el.querySelector(".warn").style.display = "none";
+    };
+    audio.addEventListener("error", fallback);
+    audio.addEventListener("loadedmetadata", ()=> dur.textContent = fmt(audio.duration));
+    audio.addEventListener("timeupdate", ()=>{
+      const f = audio.duration ? audio.currentTime/audio.duration : 0;
+      const on = Math.round(f*bars.length);
+      bars.forEach((b,i)=>b.classList.toggle("on", i<on));
+      dur.textContent = fmt(audio.duration - audio.currentTime);
+    });
+    const reset = ()=>{ el.classList.remove("playing"); btn.innerHTML = icons.play; };
+    audio.addEventListener("pause", reset);
+    audio.addEventListener("ended", ()=>{ reset(); audio.currentTime = 0; bars.forEach(b=>b.classList.remove("on")); dur.textContent = fmt(audio.duration); });
+    audio.addEventListener("play", ()=>{ el.classList.add("playing"); btn.innerHTML = icons.pause; });
+
+    btn.addEventListener("click", ()=>{
+      if(!audio.paused){ audio.pause(); return; }
+      if(playingAudio && playingAudio !== audio) playingAudio.pause();
+      playingAudio = audio;
+      audio.play().catch(fallback);
+    });
+    el.querySelector(".wave").addEventListener("click", e=>{
+      if(!audio.duration) return;
+      const r = e.currentTarget.getBoundingClientRect();
+      audio.currentTime = ((e.clientX - r.left)/r.width) * audio.duration;
+    });
+  });
+}
+build();
+</script>
+</body>
+</html>
